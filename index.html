@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>UrbanTime - Reserva. Organiza. Crece.</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-auth.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            asfalto:   '#1F2937',
+            pizarra:   '#111827',
+            metalico:  '#4B5563',
+            grisclaro: '#D1D5DB',
+            rosablanco:'#F4F7F8',
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<!-- BODY: completamente fijo, sin scroll -->
+<body>
+
+  <!-- ============================================================
+       PANTALLA DE LOGIN (oculta cuando hay sesión)
+       ============================================================ -->
+  <div id="auth-main-container" class="screen-wrap">
+
+    <!-- ── CARRUSEL DE FONDO (cubre toda la pantalla en móvil, solo columna izq en PC) ── -->
+    <div id="carousel-wrapper" class="carousel-bg">
+      <!-- Slide 1: ciudad nocturna -->
+      <div class="carousel-slide active" data-slide="0">
+        <img
+          src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=80"
+          alt="Ciudad nocturna"
+          class="slide-img"
+          onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80'"
+        />
+        <div class="slide-overlay"></div>
+      </div>
+
+      <!-- Slide 2: barbería urbana -->
+      <div class="carousel-slide" data-slide="1">
+        <img
+          src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1920&q=80"
+          alt="Barbería urbana"
+          class="slide-img"
+          onerror="this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80'"
+        />
+        <div class="slide-overlay"></div>
+      </div>
+
+      <!-- Slide 3: rascacielos / arquitectura -->
+      <div class="carousel-slide" data-slide="2">
+        <img
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80"
+          alt="Rascacielos metropolitanos"
+          class="slide-img"
+          onerror="this.src='https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1920&q=80'"
+        />
+        <div class="slide-overlay"></div>
+      </div>
+    </div>
+
+    <!-- ── COLUMNA IZQUIERDA: HERO (solo desktop) ── -->
+    <section class="hero-col">
+      <!-- Header logo -->
+      <header class="hero-header">
+        <div class="flex items-center gap-3">
+          <div class="logo-icon">
+            <svg class="w-5 h-5 text-gray-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="4" ry="4"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <path d="m9 16 2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <span class="block text-2xl font-extrabold tracking-tight text-white leading-none">UrbanTime</span>
+            <span class="block text-xs text-gray-400 font-medium tracking-wide">Reserva. Organiza. Crece.</span>
+          </div>
+        </div>
+        <div class="disponible-pill">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-xs font-semibold tracking-wide">Disponible ahora</span>
+        </div>
+      </header>
+
+      <!-- Hero central -->
+      <div class="hero-body">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-gray-200 text-xs font-semibold mb-4">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="hero-slide-tag">Metrópolis en Tiempo Real</span>
+        </div>
+
+        <h1 id="hero-slide-title" class="text-3xl xl:text-5xl font-extrabold text-white tracking-tight leading-[1.15] mb-4">
+          Tu tiempo en tus manos para <br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-300 to-gray-400">reservar y crecer.</span>
+        </h1>
+
+        <p id="hero-slide-desc" class="text-sm text-gray-300 leading-relaxed max-w-md mb-6">
+          Conecta clientes y locales en tiempo real. Pide turnos en 3 clics, evita esperas y organiza tu día con la máxima eficiencia urbana.
+        </p>
+
+        <!-- Badges métricas -->
+        <div class="grid grid-cols-3 gap-3 max-w-md">
+          <div class="metric-pill"><span class="metric-num">24/7</span><span class="metric-label">DISPONIBLE</span></div>
+          <div class="metric-pill"><span class="metric-num">100%</span><span class="metric-label">PRIVADO</span></div>
+          <div class="metric-pill"><span class="metric-num">PUSH</span><span class="metric-label">TIEMPO REAL</span></div>
+        </div>
+      </div>
+
+      <!-- Footer dots -->
+      <footer class="hero-footer">
+        <div class="flex items-center gap-2" id="carousel-dots">
+          <button onclick="goToSlide(0)" class="carousel-dot active-dot" aria-label="Slide 1"></button>
+          <button onclick="goToSlide(1)" class="carousel-dot" aria-label="Slide 2"></button>
+          <button onclick="goToSlide(2)" class="carousel-dot" aria-label="Slide 3"></button>
+        </div>
+        <span class="text-xs text-gray-400 font-medium">UrbanTime Global</span>
+      </footer>
+    </section>
+
+    <!-- ── COLUMNA DERECHA / MÓVIL: TARJETA DE LOGIN ── -->
+    <section class="card-col">
+      <div class="auth-card">
+
+        <!-- Logo dentro de la tarjeta -->
+        <div class="card-logo-row">
+          <div class="card-logo-icon">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="4" ry="4"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <path d="m9 16 2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <span class="block text-sm font-bold text-gray-900 leading-none">UrbanTime</span>
+            <span class="block text-[11px] text-gray-400 font-medium leading-none mt-0.5">Reserva. Organiza. Crece.</span>
+          </div>
+          <!-- Badge "En línea" solo visible en desktop dentro de la card -->
+          <div class="online-badge-card">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>En línea</span>
+          </div>
+        </div>
+
+        <!-- Título de la tarjeta -->
+        <div class="mb-3">
+          <h2 id="auth-heading" class="text-lg font-bold text-gray-900 leading-tight">Hola de nuevo</h2>
+          <p id="auth-subheading" class="text-xs text-gray-500 mt-0.5">Aquí estás de vuelta. Sigue donde lo dejaste.</p>
+        </div>
+
+        <!-- Botón Google -->
+        <button
+          id="google-login-btn"
+          onclick="handleOAuthLogin('google')"
+          type="button"
+          class="btn-google"
+        >
+          <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.04h3.88c2.28-2.09 3.66-5.17 3.66-9.14z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.04c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.28c-.25-.72-.38-1.49-.38-2.28s.13-1.56.38-2.28V6.59H1.25C.45 8.19 0 9.99 0 12s.45 3.81 1.25 5.41l4.03-3.13z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.59l4.03 3.13c.95-2.83 3.6-4.97 6.72-4.97z"/>
+          </svg>
+          <span id="google-btn-text">Entrar con Google</span>
+        </button>
+
+        <!-- Separador -->
+        <div class="separator"><span>o con tu correo</span></div>
+
+        <!-- Selector de Rol -->
+        <div class="role-selector">
+          <button type="button" id="role-cliente-btn" onclick="selectRole('cliente')" class="role-btn role-active">
+            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+            <span>Cliente</span>
+          </button>
+          <button type="button" id="role-negocio-btn" onclick="selectRole('negocio')" class="role-btn">
+            <i data-lucide="store" class="w-3.5 h-3.5"></i>
+            <span>Barbería / Local</span>
+          </button>
+        </div>
+
+        <!-- Formulario -->
+        <form id="auth-form" onsubmit="handleEmailAuth(event)" class="form-stack">
+
+          <!-- Campo Nombre (solo registro) -->
+          <div id="field-name-group" class="hidden">
+            <label for="input-name" class="field-label">Nombre completo</label>
+            <div class="input-wrap">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="input-name" placeholder="Tu nombre completo" class="input-field" />
+            </div>
+          </div>
+
+          <!-- Correo -->
+          <div>
+            <label for="input-email" class="field-label">Correo electrónico</label>
+            <div class="input-wrap">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="input-email" required placeholder="tu@email.com" class="input-field" />
+            </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div>
+            <div class="pass-label-row">
+              <label for="input-password" class="field-label">Contraseña</label>
+              <button type="button" onclick="openForgotModal()" class="forgot-link">¿Olvidaste tu contraseña?</button>
+            </div>
+            <div class="input-wrap">
+              <i data-lucide="key-round" class="input-icon"></i>
+              <input type="password" id="input-password" required placeholder="Tu contraseña" class="input-field pr-10" />
+              <button type="button" onclick="togglePasswordVisibility('input-password','eye-icon')" class="eye-btn" aria-label="Ver contraseña">
+                <i id="eye-icon" data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Botón principal -->
+          <button type="submit" id="submit-auth-btn" class="btn-main">
+            <span id="submit-btn-text">Iniciar Sesión</span>
+            <span>→</span>
+          </button>
+        </form>
+
+        <!-- Cifrado -->
+        <div class="cipher-row">
+          <i data-lucide="lock" class="w-3 h-3 text-amber-500"></i>
+          <span>Tus datos están cifrados y son 100% privados</span>
+        </div>
+
+        <!-- Separador social -->
+        <div class="separator"><span>o también con</span></div>
+
+        <!-- Botones sociales -->
+        <div class="social-grid">
+          <button onclick="handleOAuthLogin('facebook')" type="button" class="btn-facebook">
+            <svg class="w-3.5 h-3.5 fill-current flex-shrink-0" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <span>Facebook</span>
+          </button>
+          <button onclick="handleOAuthLogin('apple')" type="button" class="btn-apple">
+            <svg class="w-3.5 h-3.5 fill-current flex-shrink-0" viewBox="0 0 24 24">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.62-.75 1.04-1.8 1.01-2.85-.9.04-2 .6-2.65 1.35-.58.66-1.09 1.73-1.04 2.76.99.08 2.06-.51 2.68-1.26z"/>
+            </svg>
+            <span>Apple ID</span>
+          </button>
+        </div>
+
+        <!-- Footer links -->
+        <div class="footer-links">
+          <p id="toggle-auth-prompt" class="text-xs text-gray-600">
+            ¿No tienes cuenta?
+            <button type="button" onclick="toggleAuthMode()" class="font-bold text-[#1F2937] hover:underline">Regístrate gratis aquí</button>
+          </p>
+          <p class="text-[11px] text-gray-400">
+            Al continuar aceptas los <a href="#" onclick="openTermsModal(event)" class="underline hover:text-gray-700">Términos y Privacidad</a>
+          </p>
+        </div>
+
+      </div><!-- /auth-card -->
+    </section>
+
+  </div><!-- /auth-main-container -->
+
+
+  <!-- ============================================================
+       DASHBOARD (aparece tras login)
+       ============================================================ -->
+  <div id="dashboard-screen" class="screen-wrap hidden overflow-auto bg-[#F4F7F8]">
+    <div class="max-w-4xl mx-auto p-4 sm:p-8 space-y-5 animate-fade-in">
+
+      <!-- Topbar -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-200/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[#1F2937] flex items-center justify-center text-white shadow-sm">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <rect x="3" y="4" width="18" height="18" rx="4" ry="4"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <path d="m9 16 2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-[#1F2937] text-sm sm:text-base leading-tight">UrbanTime</h3>
+            <p class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Sesión activa
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-right hidden sm:block">
+            <p id="user-display-name" class="text-xs font-bold text-gray-900">Usuario UrbanTime</p>
+            <p id="user-display-role" class="text-xs text-gray-500">Cuenta Verificada</p>
+          </div>
+          <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="w-9 h-9 rounded-full border-2 border-[#1F2937] object-cover">
+          <button onclick="handleLogout()" title="Cerrar sesión" class="p-2 rounded-xl bg-gray-100 hover:bg-rose-50 text-gray-600 hover:text-rose-600 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Banner bienvenida -->
+      <div class="bg-[#1F2937] rounded-2xl p-5 sm:p-7 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5 border border-gray-700">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/10 text-xs font-semibold uppercase tracking-wider mb-2">¡Autenticación Exitosa! 🚀</span>
+          <h2 class="text-xl sm:text-2xl font-bold">¡Bienvenido a UrbanTime, <span id="welcome-name">Usuario</span>!</h2>
+          <p class="text-xs text-gray-300 mt-1 max-w-xl">Tu inicio de sesión con Google, Facebook y correo está operativo.</p>
+        </div>
+        <button onclick="showToast('Módulo de citas en preparación', 'info')" class="whitespace-nowrap px-5 py-2.5 rounded-xl bg-white text-[#1F2937] font-bold text-xs shadow-md hover:bg-gray-100 active:scale-95 transition">
+          Pedir Nuevo Turno +
+        </button>
+      </div>
+
+      <!-- Métricas -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm">
+          <span class="text-xs font-semibold text-gray-400 uppercase">Turno Actual</span>
+          <p class="text-xl font-bold text-gray-900 mt-0.5">#03 en espera</p>
+          <p class="text-xs text-emerald-600 font-medium mt-0.5">Aprox. 10 minutos</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm">
+          <span class="text-xs font-semibold text-gray-400 uppercase">Servicio</span>
+          <p class="text-xl font-bold text-gray-900 mt-0.5">Corte &amp; Barba</p>
+          <p class="text-xs text-gray-500 font-medium mt-0.5">Local verificado</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm">
+          <span class="text-xs font-semibold text-gray-400 uppercase">Seguridad</span>
+          <p class="text-xl font-bold text-emerald-600 mt-0.5">Protegida</p>
+          <p class="text-xs text-gray-500 font-medium mt-0.5">OAuth 2.0 / SSL Activo</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       MODAL: RECUPERAR CONTRASEÑA
+       ============================================================ -->
+  <div id="forgot-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-9 h-9 rounded-xl bg-gray-100 text-[#1F2937] flex items-center justify-center">
+          <i data-lucide="key" class="w-4 h-4"></i>
+        </div>
+        <button onclick="closeForgotModal()" class="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <h3 class="text-base font-bold text-gray-900">Recupera tu contraseña</h3>
+      <p class="text-xs text-gray-500 mt-0.5">Ingresa tu correo registrado para recibir el enlace de restablecimiento.</p>
+      <form onsubmit="handleForgotSubmit(event)" class="mt-4 space-y-3">
+        <div>
+          <label class="field-label">Correo electrónico</label>
+          <input type="email" id="forgot-email-input" required placeholder="tu@email.com" class="input-field w-full mt-1">
+        </div>
+        <button type="submit" class="btn-main w-full">Enviar enlace</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       MODAL: TÉRMINOS Y PRIVACIDAD
+       ============================================================ -->
+  <div id="terms-modal" class="modal-overlay hidden">
+    <div class="modal-box max-w-md">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-[#1F2937] text-white flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-base font-bold text-gray-900">Términos y Privacidad</h3>
+        </div>
+        <button onclick="closeTermsModal()" class="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="text-xs text-gray-600 space-y-2 max-h-60 overflow-y-auto pr-1">
+        <p><strong>1. Protección de Datos:</strong> Toda la información está cifrada bajo protocolos TLS/SSL de extremo a extremo.</p>
+        <p><strong>2. Uso de la Plataforma:</strong> El servicio permite a clientes reservar turnos y a negocios administrar su agenda.</p>
+        <p><strong>3. Políticas de Cancelación:</strong> Cada comercio local define sus tiempos de tolerancia y aviso de cancelación.</p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-gray-100 flex justify-end">
+        <button onclick="closeTermsModal()" class="px-4 py-2 bg-[#1F2937] hover:bg-[#111827] text-white text-xs font-bold rounded-xl transition">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TOAST
+       ============================================================ -->
+  <div id="toast-notification" class="toast-wrap pointer-events-none opacity-0 translate-y-20 transition-all duration-300">
+    <div class="toast-inner">
+      <i id="toast-icon" data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+      <span id="toast-message" class="text-xs font-medium">Operación realizada</span>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

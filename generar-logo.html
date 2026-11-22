@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>UrbanTime Logo — iOS Style</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 32px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+    }
+    canvas { display: block; border-radius: 28px; }
+    button {
+      background: #FFFFFF;
+      color: #1F2937;
+      border: none;
+      padding: 16px 52px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+    }
+    button:hover { background: #E5E7EB; }
+    p { color: #555; font-size: 13px; letter-spacing: 0.03em; }
+  </style>
+</head>
+<body>
+  <p id="status">Generando logo...</p>
+  <canvas id="c" width="1024" height="1024"></canvas>
+  <button onclick="descargar()">⬇  Descargar urbantime-logo.png</button>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx    = canvas.getContext('2d');
+    const S = 1024; // tamaño total
+
+    function draw() {
+      ctx.clearRect(0, 0, S, S);
+
+      // ══════════════════════════════
+      // 1. FONDO — squircle estilo iOS
+      //    radio ~22% = 225px para 1024
+      // ══════════════════════════════
+      ctx.save();
+      squircle(0, 0, S, S, 225);
+      ctx.clip();
+
+      // Gradiente principal: gris carbón a negro pizarra (como Apple Watch icon)
+      const bg = ctx.createLinearGradient(0, 0, S, S);
+      bg.addColorStop(0, '#2C3444');
+      bg.addColorStop(0.55, '#1F2937');
+      bg.addColorStop(1,  '#141B27');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, S, S);
+
+      // Brillo sutil arriba-izquierda (efecto glassmorphism iOS)
+      const shine = ctx.createRadialGradient(S*0.3, S*0.2, 0, S*0.3, S*0.2, S*0.6);
+      shine.addColorStop(0,   'rgba(255,255,255,0.09)');
+      shine.addColorStop(0.5, 'rgba(255,255,255,0.03)');
+      shine.addColorStop(1,   'rgba(255,255,255,0)');
+      ctx.fillStyle = shine;
+      ctx.fillRect(0, 0, S, S);
+
+      ctx.restore();
+
+      // ══════════════════════════════
+      // 2. ÍCONO — Calendario con check
+      //    centrado, grande, puro blanco
+      // ══════════════════════════════
+      const ico = S * 0.55;   // 56% del tamaño del canvas
+      const ix  = (S - ico) / 2;
+      const iy  = (S - ico) / 2;
+      const ir  = ico * 0.18; // radio de esquinas del calendario
+
+      // Sombra suave debajo del icono
+      ctx.shadowColor   = 'rgba(0,0,0,0.55)';
+      ctx.shadowBlur    = 60;
+      ctx.shadowOffsetY = 24;
+
+      // Cuerpo del calendario — blanco
+      ctx.fillStyle = '#FFFFFF';
+      rrect(ix, iy, ico, ico, ir);
+      ctx.fill();
+      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+      // Franja superior oscura (header del calendario)
+      const hh = ico * 0.22;
+      ctx.save();
+      rrect(ix, iy, ico, ico, ir); ctx.clip();
+      ctx.fillStyle = '#1F2937';
+      ctx.fillRect(ix, iy, ico, hh + 4); // +4 para cubrir la unión
+      ctx.restore();
+
+      // Pasadores del calendario (arriba)
+      const pinW  = ico * 0.065;
+      const pinH  = ico * 0.18;
+      const pinR  = pinW / 2;
+      const pinY  = iy - pinH * 0.42;
+      const pinColor = '#374151';
+
+      ctx.fillStyle = pinColor;
+      // pasador izquierdo
+      rrect(ix + ico*0.26 - pinW/2, pinY, pinW, pinH, pinR); ctx.fill();
+      // pasador derecho
+      rrect(ix + ico*0.74 - pinW/2, pinY, pinW, pinH, pinR); ctx.fill();
+
+      // ── CHECKMARK grande centrado ──
+      // Área disponible debajo del header
+      const bodyTop  = iy + hh;
+      const bodyH    = ico - hh;
+      const bodyMidX = ix + ico / 2;
+      const bodyMidY = bodyTop + bodyH / 2 + bodyH * 0.04;
+
+      // Círculo de fondo del check
+      const checkR = ico * 0.26;
+      ctx.fillStyle = '#1F2937';
+      ctx.shadowColor   = 'rgba(0,0,0,0.25)';
+      ctx.shadowBlur    = 20;
+      ctx.shadowOffsetY = 6;
+      ctx.beginPath();
+      ctx.arc(bodyMidX, bodyMidY, checkR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+      // Trazo del checkmark
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth   = ico * 0.065;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+
+      const ck = checkR * 0.52; // escala del check
+      ctx.beginPath();
+      ctx.moveTo(bodyMidX - ck * 0.9, bodyMidY + ck * 0.0);
+      ctx.lineTo(bodyMidX - ck * 0.1, bodyMidY + ck * 0.85);
+      ctx.lineTo(bodyMidX + ck * 1.0, bodyMidY - ck * 0.85);
+      ctx.stroke();
+
+      // ══════════════════════════════
+      // 3. BORDE EXTERIOR sutil (iOS)
+      // ══════════════════════════════
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth   = 5;
+      squircle(3, 3, S-6, S-6, 222);
+      ctx.stroke();
+
+      document.getElementById('status').textContent = '✅ Logo listo — clic en Descargar';
+    }
+
+    // ── Rounded Rect ──
+    function rrect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y,     x + w, y + r,     r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x,     y + h, x,     y + h - r, r);
+      ctx.lineTo(x,    y + r);
+      ctx.arcTo(x,     y,     x + r, y,          r);
+      ctx.closePath();
+    }
+
+    // ── Squircle iOS (super-ellipse aproximada con bezier) ──
+    function squircle(x, y, w, h, r) {
+      // Usamos factor de control ~0.552 para curvatura iOS
+      const k = r * 0.58;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      // top
+      ctx.lineTo(x + w - r, y);
+      ctx.bezierCurveTo(x + w - r + k, y, x + w, y + r - k, x + w, y + r);
+      // right
+      ctx.lineTo(x + w, y + h - r);
+      ctx.bezierCurveTo(x + w, y + h - r + k, x + w - r + k, y + h, x + w - r, y + h);
+      // bottom
+      ctx.lineTo(x + r, y + h);
+      ctx.bezierCurveTo(x + r - k, y + h, x, y + h - r + k, x, y + h - r);
+      // left
+      ctx.lineTo(x, y + r);
+      ctx.bezierCurveTo(x, y + r - k, x + r - k, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function descargar() {
+      const a = document.createElement('a');
+      a.download = 'urbantime-logo.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
+    // Dibujar al cargar
+    window.addEventListener('load', () => setTimeout(draw, 50));
+  </script>
+</body>
+</html>
