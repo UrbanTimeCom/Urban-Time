@@ -1,0 +1,282 @@
+/* ==========================================================
+   UrbanTime - Sistema de Diseño Pulido (Bootstrap 5 + Paleta Oficial)
+   ========================================================== */
+
+   :root {
+    --ut-asfalto: #1F2937;
+    --ut-pizarra: #111827;
+    --ut-metalico: #4B5563;
+    --ut-grisclaro: #E5E7EB;
+    --ut-rosablanco: #F4F7F8;
+    --ut-surface: #FFFFFF;
+  }
+  
+  [data-bs-theme="dark"] {
+    --ut-rosablanco: #0B0F17;
+    --ut-surface: #131924;
+    --ut-grisclaro: #232D3F;
+  }
+  
+  #dashboard-screen {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--ut-rosablanco);
+    color: var(--ut-asfalto);
+    z-index: 50;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  #dashboard-screen.hidden {
+    display: none !important;
+  }
+  
+  [data-bs-theme="dark"] #dashboard-screen {
+    color: #F3F4F6;
+  }
+  
+  /* Navbar minimalista estilo aplicación nativa */
+  .ut-navbar {
+    background-color: var(--ut-surface);
+    border-bottom: 1px solid var(--ut-grisclaro);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  .ut-brand-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background-color: var(--ut-asfalto);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  [data-bs-theme="dark"] .ut-brand-badge {
+    background-color: #F3F4F6;
+    color: var(--ut-asfalto);
+  }
+  
+  /* Barra de filtros unificada superior */
+  .ut-filter-bar {
+    background-color: var(--ut-surface);
+    border-bottom: 1px solid var(--ut-grisclaro);
+  }
+  
+  .ut-input-pill {
+    border-radius: 50rem !important;
+    border: 1px solid var(--ut-grisclaro);
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+    background-color: var(--ut-surface);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  .ut-input-pill:focus {
+    border-color: var(--ut-asfalto);
+    box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.08);
+  }
+  
+  /* Tarjetas limpias de precisión */
+  .ut-card {
+    background-color: var(--ut-surface);
+    border: 1px solid var(--ut-grisclaro);
+    border-radius: 1.15rem;
+    box-shadow: 0 1px 3px rgba(17, 24, 39, 0.03);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  
+  .ut-card-hover:hover {
+    transform: translateY(-3px);
+    border-color: #9CA3AF;
+    box-shadow: 0 12px 24px -8px rgba(17, 24, 39, 0.09);
+  }
+  
+  /* Píldoras de categoría y estado */
+  .ut-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 50rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: #F3F4F6;
+    color: #374151;
+  }
+  
+  [data-bs-theme="dark"] .ut-tag {
+    background-color: #1F2937;
+    color: #E5E7EB;
+  }
+  
+  /* Botón Principal Negro Asfalto */
+  .btn-ut-dark {
+    background-color: var(--ut-asfalto);
+    border: 1px solid var(--ut-asfalto);
+    color: #FFFFFF;
+    border-radius: 50rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.55rem 1.25rem;
+    transition: all 0.18s ease;
+  }
+  
+  .btn-ut-dark:hover {
+    background-color: var(--ut-pizarra);
+    border-color: var(--ut-pizarra);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+  }
+  
+  [data-bs-theme="dark"] .btn-ut-dark {
+    background-color: #F9FAFB;
+    border-color: #F9FAFB;
+    color: var(--ut-pizarra);
+  }
+  
+  .btn-ut-icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--ut-grisclaro);
+    background-color: var(--ut-surface);
+    color: var(--ut-asfalto);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+  }
+  
+  .btn-ut-icon-circle:hover {
+    border-color: var(--ut-asfalto);
+    background-color: #F9FAFB;
+  }
+  
+  [data-bs-theme="dark"] .btn-ut-icon-circle {
+    color: #F3F4F6;
+  }
+  
+  /* Mapa OpenStreetMap con bordes suaves */
+  #client-map {
+    width: 100%;
+    height: 390px;
+    border-radius: 0.85rem;
+    border: 1px solid var(--ut-grisclaro);
+    z-index: 1;
+  }
+  
+  /* Selector de Servicio / Especialista en Reserva */
+  .ut-select-box {
+    border: 1.5px solid var(--ut-grisclaro);
+    border-radius: 0.9rem;
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    background-color: var(--ut-surface);
+    transition: all 0.15s ease;
+  }
+  
+  .ut-select-box:hover {
+    border-color: #9CA3AF;
+  }
+  
+  .ut-select-box.active {
+    border-color: var(--ut-asfalto);
+    background-color: rgba(31, 41, 55, 0.03);
+    box-shadow: inset 0 0 0 1px var(--ut-asfalto);
+  }
+  
+  [data-bs-theme="dark"] .ut-select-box.active {
+    border-color: #F3F4F6;
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px #F3F4F6;
+  }
+  
+  /* Calendario Mensual */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+  }
+  
+  .cal-day-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    padding-bottom: 6px;
+  }
+  
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  
+  .cal-day:hover:not(.cal-disabled) {
+    background-color: rgba(31, 41, 55, 0.1);
+  }
+  
+  .cal-day.cal-selected {
+    background-color: var(--ut-asfalto) !important;
+    color: #FFFFFF !important;
+  }
+  
+  [data-bs-theme="dark"] .cal-day.cal-selected {
+    background-color: #F3F4F6 !important;
+    color: var(--ut-asfalto) !important;
+  }
+  
+  .cal-day.cal-disabled {
+    opacity: 0.28;
+    cursor: not-allowed;
+  }
+  
+  /* Stepper visual en Reserva */
+  .ut-step-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: var(--ut-asfalto);
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  [data-bs-theme="dark"] .ut-step-badge {
+    background-color: #F3F4F6;
+    color: var(--ut-asfalto);
+  }
+/* ===== Selector de modo ===== */
+#mode-screen { min-height: 100vh; background: var(--bs-body-bg); }
+.mode-wrap { max-width: 1040px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+.mode-card { display: block; background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: 1.25rem; padding: 1.75rem; color: inherit; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.mode-card:hover, .mode-card:focus-visible { transform: translateY(-4px); border-color: #1F2937; box-shadow: 0 14px 34px rgba(17,24,39,.14); outline: none; }
+.mode-icon { width: 52px; height: 52px; border-radius: 14px; background: #1F2937; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1rem; }
+.mode-list { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; gap: .5rem; font-size: .85rem; }
+.mode-list i { margin-right: .5rem; opacity: .7; }
+.mode-cta { font-weight: 700; font-size: .88rem; }
+[data-bs-theme="dark"] .mode-card:hover { border-color: #D1D5DB; }
+
+/* ===== Resumen del prestador ===== */
+.kpi-card { padding: 1.1rem 1.25rem; height: 100%; }
+.kpi-card > i { font-size: 1.15rem; opacity: .6; }
+.kpi-num { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin: .35rem 0 .1rem; }
